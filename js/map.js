@@ -12,11 +12,11 @@ var OFFERS = [
   },
   {
     title: 'Огромный прекрасный дворец',
-    type: 'house'
+    type: 'palace'
   },
   {
     title: 'Маленький ужасный дворец',
-    type: 'house'
+    type: 'palace'
   },
   {
     title: 'Красивый гостевой домик',
@@ -37,19 +37,43 @@ var OFFERS = [
 ];
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var OFFER_TYPE_NAMES = {
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало'
+var OFFER_TYPE_MAP = {
+  flat: {
+    name: 'Квартира',
+    minprice: 1000
+  },
+  house: {
+    name: 'Дом',
+    minprice: 5000
+  },
+  bungalo: {
+    name: 'Лачуга',
+    minprice: 0
+  },
+  palace: {
+    name: 'Дворец',
+    minprice: 10000
+  }
+};
+var ROOM_GUEST_MAP = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
 };
 var PIN_LEFT_OFFSET = 5;
 var PIN_TOP_OFFSET = 39;
 var ESC_KEYCODE = 27;
 
 // Переменные
-var pinTemplate = document.querySelector('template').content.querySelector('button.map__pin');
+var templateElement = document.querySelector('template').content;
+// Костыль для IE
+if (!templateElement) {
+  templateElement = document.querySelector('template');
+}
+var pinTemplate = templateElement.querySelector('.map__pin');
 var mapPinsElement = document.querySelector('.map__pins');
-var cardTemplate = document.querySelector('template').content.querySelector('article.map__card');
+var cardTemplate = templateElement.querySelector('article.map__card');
 var mapElement = document.querySelector('.map');
 var mapFilterElement = mapElement.querySelector('.map__filters-container');
 var similarAds = [];
@@ -100,7 +124,7 @@ var renderCard = function (similarAd, id) {
   offerTitleElement.textContent = similarAd.offer.title;
   offerAddressElement.textContent = similarAd.offer.address;
   offerPriceElement.textContent = similarAd.offer.price + '\u20BD/ночь';
-  offerTypeElement.textContent = OFFER_TYPE_NAMES[similarAd.offer.type];
+  offerTypeElement.textContent = OFFER_TYPE_MAP[similarAd.offer.type].name;
   offerSizeElement.textContent = similarAd.offer.rooms + ' для ' + similarAd.offer.guests + ' гостей';
   offerCheckElement.textContent = 'Заезд после ' + similarAd.offer.checkin + ', выезд до ' + similarAd.offer.checkout;
   var fragment = document.createDocumentFragment();
@@ -151,8 +175,8 @@ var enableForm = function () {
 // Делает пин активным
 var activatePin = function (evt) {
   deactivatePin();
-  evt.target.classList.add('map__pin--active');
-  showCard(evt.target);
+  evt.currentTarget.classList.add('map__pin--active');
+  showCard(evt.currentTarget);
 };
 
 // Делает пин неактивным
@@ -188,9 +212,11 @@ var createCard = function (pin) {
 // Закрывает окно с объявлением
 var closeCard = function () {
   var activeCard = mapElement.querySelector('.map__card');
-  activeCard.classList.add('hidden');
-  deactivatePin();
-  document.removeEventListener('keydown', cardEscPressHandler);
+  if (activeCard) {
+    activeCard.classList.add('hidden');
+    deactivatePin();
+    document.removeEventListener('keydown', cardEscPressHandler);
+  }
 };
 
 for (var i = 0; i < 8; i++) {
@@ -224,6 +250,8 @@ var pinMouseUpHandler = function () {
   showMap();
   renderPinsFragment();
   enableForm();
+  closeCard();
+  checkRoomNumber();
 };
 
 var pinClickHandler = function (evt) {
@@ -241,3 +269,86 @@ var cardEscPressHandler = function (evt) {
 };
 
 mapPinMainElement.addEventListener('mouseup', pinMouseUpHandler);
+
+// Валидация
+var titleFormElement = document.querySelector('#title');
+
+var titleFormElementInvalidhandler = function () {
+  if (titleFormElement.validity.tooShort) {
+    titleFormElement.setCustomValidity('Заголовок должен быть не меньше 30 символов');
+  } else if (titleFormElement.validity.tooLong) {
+    titleFormElement.setCustomValidity('Заголовок должен быть не больше 100 символов');
+  } else if (titleFormElement.validity.valueMissing) {
+    titleFormElement.setCustomValidity('Обязательное поле');
+  }
+};
+
+titleFormElement.addEventListener('invalid', titleFormElementInvalidhandler);
+
+var priceFormElement = document.querySelector('#price');
+
+var priceFormElementInvalidHandler = function () {
+  if (priceFormElement.validity.rangeUnderflow) {
+    priceFormElement.setCustomValidity('Цена не может быть меньше ' + priceFormElement.min + ' руб.');
+  } else if (priceFormElement.validity.rangeOverflow) {
+    priceFormElement.setCustomValidity('Цена не может быть больше ' + priceFormElement.max + ' руб.');
+  } else if (priceFormElement.validity.badInput) {
+    priceFormElement.setCustomValidity('Цена должна быть числом');
+  } else if (priceFormElement.validity.valueMissing) {
+    priceFormElement.setCustomValidity('Обязательное поле');
+  }
+};
+
+priceFormElement.addEventListener('invalid', priceFormElementInvalidHandler);
+
+var timeinFormElement = document.querySelector('#timein');
+var timeoutFormElement = document.querySelector('#timeout');
+
+var selectOption = function (listElement, value) {
+  var optionElement = listElement.querySelector('option[value="' + value + '"]');
+  optionElement.selected = true;
+};
+
+var timeinChangeHandler = function (evt) {
+  var timeinValue = evt.currentTarget.value;
+  selectOption(timeoutFormElement, timeinValue);
+};
+
+timeinFormElement.addEventListener('change', timeinChangeHandler);
+
+var timeoutChangeHandler = function (evt) {
+  var timeoutValue = evt.currentTarget.value;
+  selectOption(timeinFormElement, timeoutValue);
+};
+
+timeoutFormElement.addEventListener('change', timeoutChangeHandler);
+
+var typeFormElement = document.querySelector('#type');
+
+var typeChangeHandler = function (evt) {
+  var typeValue = evt.currentTarget.value;
+  priceFormElement.min = OFFER_TYPE_MAP[typeValue].minprice;
+};
+
+typeFormElement.addEventListener('change', typeChangeHandler);
+
+var roomNumberFormElement = document.querySelector('#room_number');
+var capacityFormElement = document.querySelector('#capacity');
+
+var checkRoomNumber = function () {
+  var roomNumberValue = roomNumberFormElement.value;
+  for (i = 0; i < capacityFormElement.options.length; i++) {
+    if (ROOM_GUEST_MAP[roomNumberValue].indexOf(parseInt(capacityFormElement.options[i].value, 10)) > -1) {
+      capacityFormElement.options[i].disabled = false;
+      capacityFormElement.options[i].selected = true;
+    } else {
+      capacityFormElement.options[i].disabled = true;
+    }
+  }
+};
+
+var roomNumberChangeHandler = function () {
+  checkRoomNumber();
+};
+
+roomNumberFormElement.addEventListener('change', roomNumberChangeHandler);
