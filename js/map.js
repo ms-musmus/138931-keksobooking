@@ -252,6 +252,7 @@ var pinMouseUpHandler = function () {
   enableForm();
   closeCard();
   checkRoomNumber();
+  synchronizeTypePrice();
 };
 
 var pinClickHandler = function (evt) {
@@ -273,7 +274,16 @@ mapPinMainElement.addEventListener('mouseup', pinMouseUpHandler);
 // Валидация
 var titleFormElement = document.querySelector('#title');
 
-var titleFormElementInvalidhandler = function () {
+var titleFormElementInvalidHandler = function () {
+  removeCustomValidity(titleFormElement);
+  addTitleCustomValidity();
+};
+
+var removeCustomValidity = function (element) {
+  element.setCustomValidity('');
+};
+
+var addTitleCustomValidity = function () {
   if (titleFormElement.validity.tooShort) {
     titleFormElement.setCustomValidity('Заголовок должен быть не меньше 30 символов');
   } else if (titleFormElement.validity.tooLong) {
@@ -283,11 +293,19 @@ var titleFormElementInvalidhandler = function () {
   }
 };
 
-titleFormElement.addEventListener('invalid', titleFormElementInvalidhandler);
+var checkValidityOnChangeHandler = function (evt) {
+  if (evt.currentTarget.checkValidity()) {
+    removeCustomValidity(evt.currentTarget);
+  }
+};
+
+titleFormElement.addEventListener('invalid', titleFormElementInvalidHandler);
+titleFormElement.addEventListener('change', checkValidityOnChangeHandler);
+titleFormElement.addEventListener('input', checkValidityOnChangeHandler);
 
 var priceFormElement = document.querySelector('#price');
 
-var priceFormElementInvalidHandler = function () {
+var addPriceCustomValidity = function () {
   if (priceFormElement.validity.rangeUnderflow) {
     priceFormElement.setCustomValidity('Цена не может быть меньше ' + priceFormElement.min + ' руб.');
   } else if (priceFormElement.validity.rangeOverflow) {
@@ -299,7 +317,14 @@ var priceFormElementInvalidHandler = function () {
   }
 };
 
+var priceFormElementInvalidHandler = function () {
+  removeCustomValidity(priceFormElement);
+  addPriceCustomValidity();
+};
+
 priceFormElement.addEventListener('invalid', priceFormElementInvalidHandler);
+priceFormElement.addEventListener('change', checkValidityOnChangeHandler);
+priceFormElement.addEventListener('input', checkValidityOnChangeHandler);
 
 var timeinFormElement = document.querySelector('#timein');
 var timeoutFormElement = document.querySelector('#timeout');
@@ -325,9 +350,14 @@ timeoutFormElement.addEventListener('change', timeoutChangeHandler);
 
 var typeFormElement = document.querySelector('#type');
 
-var typeChangeHandler = function (evt) {
-  var typeValue = evt.currentTarget.value;
+var synchronizeTypePrice = function () {
+  var typeValue = typeFormElement.value;
   priceFormElement.min = OFFER_TYPE_MAP[typeValue].minprice;
+  priceFormElement.checkValidity();
+};
+
+var typeChangeHandler = function () {
+  synchronizeTypePrice();
 };
 
 typeFormElement.addEventListener('change', typeChangeHandler);
