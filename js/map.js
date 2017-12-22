@@ -8,6 +8,7 @@
   var PIN_X_MAX = 899;
   var MAIN_PIN_OFFSET_Y = 48;
   var MAIN_PIN_OFFSET_X = 1;
+  var PIN_Y_ABSOLUTE_OFFSET = 170; // Смещение до overlay
 
   var mapElement = document.querySelector('.map');
   var mapPinsElement = document.querySelector('.map__pins');
@@ -20,14 +21,14 @@
     window.form.enableForm();
     closeCard();
     window.formSynchronize();
-    window.form.setAddress(getMainPinLocation(mapPinMainElement));
+    window.form.setAddress(getMainPinLocation());
   };
 
   // Ищет адрес пина по координатам
-  var getMainPinLocation = function (pin) {
+  var getMainPinLocation = function () {
     return {
-      x: parseInt(pin.offsetLeft, 10) + MAIN_PIN_OFFSET_X,
-      y: parseInt(pin.offsetTop, 10) + MAIN_PIN_OFFSET_Y
+      x: mapPinMainElement.offsetLeft + MAIN_PIN_OFFSET_X,
+      y: mapPinMainElement.offsetTop + MAIN_PIN_OFFSET_Y - PIN_Y_ABSOLUTE_OFFSET
     };
   };
 
@@ -57,13 +58,12 @@
       mapElement.removeChild(activeCard);
       deactivatePin();
       document.removeEventListener('keydown', cardEscPressHandler);
-      mapElement.removeChild(activeCard);
     }
   };
 
   var pinClickHandler = function (evt) {
     activatePin(evt);
-    window.showCard(window.card.renderCard(window.data.similarAds[evt.currentTarget.dataset.customId], evt.currentTarget.dataset.customId), mapElement, mapFilterElement, cardEscPressHandler, cardCloseHandler);
+    window.showCard(window.card.renderCard(window.data.getSimilarAds()[evt.currentTarget.dataset.customId], evt.currentTarget.dataset.customId), mapElement, mapFilterElement, cardEscPressHandler, cardCloseHandler);
   };
 
   var cardCloseHandler = function () {
@@ -107,7 +107,7 @@
         }
       };
 
-      mapPinMainElement.style.top = checkPinCoord(mapPinMainElement.offsetTop - shift.y, PIN_Y_MAX, PIN_Y_MIN);
+      mapPinMainElement.style.top = checkPinCoord(mapPinMainElement.offsetTop - shift.y, PIN_Y_MAX + PIN_Y_ABSOLUTE_OFFSET, PIN_Y_MIN + PIN_Y_ABSOLUTE_OFFSET);
       mapPinMainElement.style.left = checkPinCoord(mapPinMainElement.offsetLeft - shift.x, PIN_X_MAX, PIN_X_MIN);
 
     };
@@ -115,7 +115,7 @@
     var mouseUpHandler = function (upEvt) {
       upEvt.preventDefault();
 
-      window.form.setAddress(getMainPinLocation(mapPinMainElement));
+      window.form.setAddress(getMainPinLocation());
 
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);

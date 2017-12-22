@@ -14,6 +14,17 @@
       if (evt.keyCode === ESC_KEYCODE) {
         action();
       }
+    },
+    getRooms: function (roomNumber) {
+      if (roomNumber > 10 && roomNumber < 20) {
+        return roomNumber + ' комнат';
+      } else if (roomNumber % 10 === 1) {
+        return roomNumber + ' комната';
+      } else if (roomNumber % 10 === 2 || roomNumber % 10 === 3 || roomNumber % 10 === 4) {
+        return roomNumber + ' комнаты';
+      } else {
+        return roomNumber + ' комнат';
+      }
     }
   };
 
