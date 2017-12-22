@@ -36,9 +36,8 @@
       type: 'bungalo'
     }
   ];
-  var TIMES = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-
+  var TIMES = ['12:00', '13:00', '14:00'];
   // Возвращает массив фич случайной длины
   var generateFeaturesArray = function () {
     var randomFeatures = [];
@@ -105,6 +104,9 @@
       100: [0]
     },
     similarAds: generateSimilarAds(),
+    getTimes: function () {
+      return TIMES;
+    }
   };
 
 })();
