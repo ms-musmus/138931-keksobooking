@@ -3,10 +3,10 @@
 (function () {
 
   var TIMES = ['12:00', '13:00', '14:00'];
-  var similarAds = [];
+  var tempSimilarAds = [];
 
   var successHandler = function (data) {
-    similarAds = data;
+    tempSimilarAds = data;
   };
 
   var errorHandler = function (errorMessage) {
@@ -43,11 +43,28 @@
       3: [1, 2, 3],
       100: [0]
     },
+    OFFER_PRICE_MAP: {
+      middle: {
+        min: 10000,
+        max: 50000
+      },
+      low: {
+        min: null,
+        max: 10000
+      },
+      high: {
+        min: 50000,
+        max: null
+      }
+    },
     getTimes: function () {
       return TIMES;
     },
     getSimilarAds: function () {
-      return similarAds;
+      return tempSimilarAds;
+    },
+    setSimilarAds: function (similarAds) {
+      tempSimilarAds = similarAds;
     }
   };
 
