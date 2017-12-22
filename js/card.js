@@ -26,7 +26,7 @@
       offerAddressElement.textContent = similarAd.offer.address;
       offerPriceElement.textContent = similarAd.offer.price + '\u20BD/ночь';
       offerTypeElement.textContent = window.data.OFFER_TYPE_MAP[similarAd.offer.type].name;
-      offerSizeElement.textContent = similarAd.offer.rooms + ' для ' + similarAd.offer.guests + ' гостей';
+      offerSizeElement.textContent = window.utils.getRooms(similarAd.offer.rooms) + ' для ' + similarAd.offer.guests + ' гостей';
       offerCheckElement.textContent = 'Заезд после ' + similarAd.offer.checkin + ', выезд до ' + similarAd.offer.checkout;
       var fragment = document.createDocumentFragment();
       for (var i = 0; i < similarAd.offer.features.length; i++) {

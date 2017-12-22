@@ -8,6 +8,7 @@
   var PIN_X_MAX = 899;
   var MAIN_PIN_OFFSET_Y = 48;
   var MAIN_PIN_OFFSET_X = 1;
+  var PIN_Y_ABSOLUTE_OFFSET = 170; // Смещение до overlay
 
   var mapElement = document.querySelector('.map');
   var mapPinsElement = document.querySelector('.map__pins');
@@ -27,7 +28,7 @@
   var getMainPinLocation = function () {
     return {
       x: mapPinMainElement.offsetLeft + MAIN_PIN_OFFSET_X,
-      y: mapPinMainElement.offsetTop + MAIN_PIN_OFFSET_Y
+      y: mapPinMainElement.offsetTop + MAIN_PIN_OFFSET_Y - PIN_Y_ABSOLUTE_OFFSET
     };
   };
 
@@ -106,7 +107,7 @@
         }
       };
 
-      mapPinMainElement.style.top = checkPinCoord(mapPinMainElement.offsetTop - shift.y, PIN_Y_MAX, PIN_Y_MIN);
+      mapPinMainElement.style.top = checkPinCoord(mapPinMainElement.offsetTop - shift.y, PIN_Y_MAX + PIN_Y_ABSOLUTE_OFFSET, PIN_Y_MIN + PIN_Y_ABSOLUTE_OFFSET);
       mapPinMainElement.style.left = checkPinCoord(mapPinMainElement.offsetLeft - shift.x, PIN_X_MAX, PIN_X_MIN);
 
     };
