@@ -12,14 +12,14 @@
   var mapElement = document.querySelector('.map');
   var mapPinsElement = document.querySelector('.map__pins');
   var mapPinMainElement = document.querySelector('.map__pin--main');
+  var mapFilterElement = document.querySelector('.map__filters-container');
 
   var pinMouseUpHandler = function () {
     showMap();
     window.pin.renderPinsFragment(pinClickHandler);
     window.form.enableForm();
     closeCard();
-    window.formSynchronize.synchronizeRoomNumber();
-    window.formSynchronize.synchronizeTypePrice();
+    window.formSynchronize();
     window.form.setAddress(getMainPinLocation(mapPinMainElement));
   };
 
@@ -40,7 +40,6 @@
   var activatePin = function (evt) {
     deactivatePin();
     evt.currentTarget.classList.add('map__pin--active');
-    window.card.showCard(evt.currentTarget, mapElement, cardEscPressHandler, cardCloseHandler);
   };
 
   // Делает пин неактивным
@@ -55,16 +54,17 @@
   var closeCard = function () {
     var activeCard = document.querySelector('.map__card');
     if (activeCard) {
-      activeCard.classList.add('hidden');
+      mapElement.removeChild(activeCard);
       deactivatePin();
       document.removeEventListener('keydown', cardEscPressHandler);
+      mapElement.removeChild(activeCard);
     }
   };
 
   var pinClickHandler = function (evt) {
     activatePin(evt);
+    window.showCard(window.card.renderCard(window.data.similarAds[evt.currentTarget.dataset.customId], evt.currentTarget.dataset.customId), mapElement, mapFilterElement, cardEscPressHandler, cardCloseHandler);
   };
-
 
   var cardCloseHandler = function () {
     closeCard();
