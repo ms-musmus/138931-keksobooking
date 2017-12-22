@@ -29,11 +29,11 @@
       offerSizeElement.textContent = window.utils.getRooms(similarAd.offer.rooms) + ' для ' + similarAd.offer.guests + ' гостей';
       offerCheckElement.textContent = 'Заезд после ' + similarAd.offer.checkin + ', выезд до ' + similarAd.offer.checkout;
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < similarAd.offer.features.length; i++) {
+      similarAd.offer.features.forEach(function (feature) {
         var offerFeature = document.createElement('li');
-        offerFeature.className = 'feature feature--' + similarAd.offer.features[i];
+        offerFeature.className = 'feature feature--' + feature;
         fragment.appendChild(offerFeature);
-      }
+      });
       offerFeaturesElement.innerHTML = '';
       offerFeaturesElement.appendChild(fragment);
       offerDescriptionElement.textContent = similarAd.offer.description;

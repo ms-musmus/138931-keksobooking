@@ -18,7 +18,7 @@
   var getPinCoords = function (x, y) {
     return {
       left: x - PIN_LEFT_OFFSET + 'px',
-      top: y - PIN_TOP_OFFSET + 'px',
+      top: y - PIN_TOP_OFFSET + window.pin.PIN_Y_ABSOLUTE_OFFSET + 'px',
     };
   };
 
@@ -33,28 +33,56 @@
     return pinElement;
   };
 
+  var filterPins = function (similarAds, params) {
+    var selectElements = params.querySelectorAll('select');
+    var checkboxElements = params.querySelectorAll('input[type="checkbox"]:checked');
+    similarAds = similarAds.filter(function (similarAd) {
+      for (var i = 0; i < selectElements.length; i++) {
+        if (!window.utils.checkPinProperty(similarAd, selectElements[i])) {
+          return false;
+        }
+      }
+      for (var j = 0; j < checkboxElements.length; j++) {
+        if (!window.utils.checkPinProperty(similarAd, checkboxElements[j])) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return similarAds;
+  };
+
   window.pin = {
     // Отрисовывает пины
-    renderPinsFragment: function (pinClickHandler) {
+    renderPinsFragment: function (pinClickHandler, mainPinCoords, params) {
       var fragment = document.createDocumentFragment();
-      var similarAds = [];
-      if (window.data.getSimilarAds().length > PIN_MAX_COUNT) {
-        similarAds = window.data.getSimilarAds().slice(0, PIN_MAX_COUNT);
-      } else {
-        similarAds = window.data.getSimilarAds();
+      var similarAds = window.data.getSimilarAds().sort(function (left, right) {
+        var diff = window.utils.getPinCoordsDiff(mainPinCoords, left) - window.utils.getPinCoordsDiff(mainPinCoords, right);
+        if (diff === 0) {
+          diff = window.utils.getStringDiff(left, right);
+        }
+        return diff;
+      });
+      window.data.setSimilarAds(similarAds);
+      if (params) {
+        similarAds = filterPins(similarAds, params);
       }
-      for (var i = 0; i < similarAds.length; i++) {
-        var pin = renderPin(similarAds[i], i);
+      if (similarAds.length > PIN_MAX_COUNT) {
+        similarAds = similarAds.slice(0, PIN_MAX_COUNT);
+      }
+      similarAds.forEach(function (similarAd) {
+        var pin = renderPin(similarAd, window.data.getSimilarAds().indexOf(similarAd));
         fragment.appendChild(pin);
         pin.addEventListener('click', pinClickHandler);
-      }
+      });
       if (mapPinsElement.children.length > 2) {
         while (mapPinsElement.children[2]) {
           mapPinsElement.removeChild(mapPinsElement.children[2]);
         }
       }
       mapPinsElement.appendChild(fragment);
-    }
+    },
+    PIN_Y_ABSOLUTE_OFFSET: 100 // Смещение до overlay
   };
 
 
