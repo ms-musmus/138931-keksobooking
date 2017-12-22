@@ -13,18 +13,27 @@
   var mapPinsElement = document.querySelector('.map__pins');
   var pinTemplate = templateElement.querySelector('.map__pin');
 
+  // Считает координаты пина по адресу
+  var getPinCoords = function (x, y) {
+    return {
+      left: x - PIN_LEFT_OFFSET + 'px',
+      top: y - PIN_TOP_OFFSET + 'px',
+    };
+  };
+
   // Заполняет шаблон пина
   var renderPin = function (similarAd, id) {
+    var pinCoords = getPinCoords(similarAd.location.x, similarAd.location.y);
     var pinElement = pinTemplate.cloneNode(true);
-    pinElement.style.left = similarAd.location.x - PIN_LEFT_OFFSET + 'px';
-    pinElement.style.top = similarAd.location.y - PIN_TOP_OFFSET + 'px';
+    pinElement.style.left = pinCoords.left;
+    pinElement.style.top = pinCoords.top;
     pinElement.querySelector('img').src = similarAd.author.avatar;
     pinElement.dataset.customId = id;
     return pinElement;
   };
 
-  // Отрисовывает пины
   window.pin = {
+    // Отрисовывает пины
     renderPinsFragment: function (pinClickHandler) {
       var fragment = document.createDocumentFragment();
       for (var i = 0; i < window.data.similarAds.length; i++) {
@@ -38,6 +47,13 @@
         }
       }
       mapPinsElement.appendChild(fragment);
+    },
+    // Ищет адрес пина по координатам
+    getPinLocation: function (left, top) {
+      return {
+        x: parseInt(left, 10) + PIN_LEFT_OFFSET,
+        y: parseInt(top, 10) + PIN_TOP_OFFSET
+      };
     }
   };
 
