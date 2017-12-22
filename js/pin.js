@@ -47,13 +47,6 @@
         }
       }
       mapPinsElement.appendChild(fragment);
-    },
-    // Ищет адрес пина по координатам
-    getPinLocation: function (left, top) {
-      return {
-        x: parseInt(left, 10) + PIN_LEFT_OFFSET,
-        y: parseInt(top, 10) + PIN_TOP_OFFSET
-      };
     }
   };
 

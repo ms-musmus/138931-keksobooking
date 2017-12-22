@@ -4,6 +4,7 @@
 
   var noticeFormElement = document.querySelector('form.notice__form');
   var noticeFieldSetElements = noticeFormElement.querySelectorAll('fieldset');
+  var addressFormElement = noticeFormElement.querySelector('#address');
 
   window.form = {
     titleFormElement: noticeFormElement.querySelector('#title'),
@@ -19,6 +20,10 @@
       for (var i = 0; i < noticeFieldSetElements.length; i++) {
         noticeFieldSetElements[i].disabled = false;
       }
+    },
+    setAddress: function (coords) {
+      var address = 'x: ' + coords.x + ', y: ' + coords.y;
+      addressFormElement.value = address;
     }
   };
 
