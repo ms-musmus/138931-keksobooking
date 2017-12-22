@@ -6,6 +6,20 @@
   var noticeFieldSetElements = noticeFormElement.querySelectorAll('fieldset');
   var addressFormElement = noticeFormElement.querySelector('#address');
 
+  var errorHandler = function (errorMessage) {
+    var errorElement = document.createElement('div');
+    errorElement.classList.add('error-message');
+    errorElement.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', errorElement);
+  };
+
+  noticeFormElement.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(noticeFormElement), function () {
+      noticeFormElement.reset();
+    }, errorHandler);
+    evt.preventDefault();
+  });
+
   window.form = {
     titleFormElement: noticeFormElement.querySelector('#title'),
     priceFormElement: noticeFormElement.querySelector('#price'),

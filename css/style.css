@@ -855,3 +855,16 @@ textarea:focus
 {
   background-position: -10px -10px;
 }
+
+.error-message {
+  z-index: 100;
+  margin: 0 auto;
+  text-align: center;
+  background-color: red;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0.5;
+  font-size: 30px;
+  width: 100%;
+}

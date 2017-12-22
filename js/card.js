@@ -7,7 +7,6 @@
   if (!templateElement) {
     templateElement = document.querySelector('template');
   }
-
   var cardTemplate = templateElement.querySelector('article.map__card');
 
   window.card = {

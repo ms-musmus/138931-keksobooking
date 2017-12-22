@@ -20,14 +20,14 @@
     window.form.enableForm();
     closeCard();
     window.formSynchronize();
-    window.form.setAddress(getMainPinLocation(mapPinMainElement));
+    window.form.setAddress(getMainPinLocation());
   };
 
   // Ищет адрес пина по координатам
-  var getMainPinLocation = function (pin) {
+  var getMainPinLocation = function () {
     return {
-      x: parseInt(pin.offsetLeft, 10) + MAIN_PIN_OFFSET_X,
-      y: parseInt(pin.offsetTop, 10) + MAIN_PIN_OFFSET_Y
+      x: mapPinMainElement.offsetLeft + MAIN_PIN_OFFSET_X,
+      y: mapPinMainElement.offsetTop + MAIN_PIN_OFFSET_Y
     };
   };
 
@@ -57,13 +57,12 @@
       mapElement.removeChild(activeCard);
       deactivatePin();
       document.removeEventListener('keydown', cardEscPressHandler);
-      mapElement.removeChild(activeCard);
     }
   };
 
   var pinClickHandler = function (evt) {
     activatePin(evt);
-    window.showCard(window.card.renderCard(window.data.similarAds[evt.currentTarget.dataset.customId], evt.currentTarget.dataset.customId), mapElement, mapFilterElement, cardEscPressHandler, cardCloseHandler);
+    window.showCard(window.card.renderCard(window.data.getSimilarAds()[evt.currentTarget.dataset.customId], evt.currentTarget.dataset.customId), mapElement, mapFilterElement, cardEscPressHandler, cardCloseHandler);
   };
 
   var cardCloseHandler = function () {
@@ -115,7 +114,7 @@
     var mouseUpHandler = function (upEvt) {
       upEvt.preventDefault();
 
-      window.form.setAddress(getMainPinLocation(mapPinMainElement));
+      window.form.setAddress(getMainPinLocation());
 
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);

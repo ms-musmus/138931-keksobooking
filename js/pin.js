@@ -4,6 +4,7 @@
 
   var PIN_LEFT_OFFSET = 5;
   var PIN_TOP_OFFSET = 39;
+  var PIN_MAX_COUNT = 5;
 
   var templateElement = document.querySelector('template').content;
   // Костыль для IE
@@ -36,8 +37,14 @@
     // Отрисовывает пины
     renderPinsFragment: function (pinClickHandler) {
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < window.data.similarAds.length; i++) {
-        var pin = renderPin(window.data.similarAds[i], i);
+      var similarAds = [];
+      if (window.data.getSimilarAds().length > PIN_MAX_COUNT) {
+        similarAds = window.data.getSimilarAds().slice(0, PIN_MAX_COUNT);
+      } else {
+        similarAds = window.data.getSimilarAds();
+      }
+      for (var i = 0; i < similarAds.length; i++) {
+        var pin = renderPin(similarAds[i], i);
         fragment.appendChild(pin);
         pin.addEventListener('click', pinClickHandler);
       }
