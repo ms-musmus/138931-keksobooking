@@ -20,14 +20,12 @@
     var file = avatarFileChooserElement.files[0];
     var fileName = file.name.toLowerCase();
 
-    var avatarLoadHandler = function () {
-      avatarPreviewElement.src = reader.result;
-    };
-
     if (checkFileType(fileName)) {
       var reader = new FileReader();
 
-      reader.addEventListener('load', avatarLoadHandler);
+      reader.addEventListener('load', function () {
+        avatarPreviewElement.src = reader.result;
+      });
 
       reader.readAsDataURL(file);
     }
@@ -37,18 +35,17 @@
 
     var file = photoFileChooserElement.files[0];
 
-    var photoLoadHandler = function () {
-      var photo = document.createElement('img');
-      photo.src = reader.result;
-      photo.className = 'form__photo-img';
-      photoPreviewElement.appendChild(photo);
-    };
-
     var fileName = file.name.toLowerCase();
 
     if (checkFileType(fileName)) {
       var reader = new FileReader();
-      reader.addEventListener('load', photoLoadHandler);
+
+      reader.addEventListener('load', function () {
+        var photo = document.createElement('img');
+        photo.src = reader.result;
+        photo.className = 'form__photo-img';
+        photoPreviewElement.appendChild(photo);
+      });
 
       reader.readAsDataURL(file);
     }
