@@ -112,9 +112,8 @@
           return max + 'px';
         } else if (newCoord < min) {
           return min + 'px';
-        } else {
-          return newCoord + 'px';
         }
+        return newCoord + 'px';
       };
 
       mapPinMainElement.style.top = checkPinCoord(mapPinMainElement.offsetTop - shift.y, PIN_Y_MAX + window.pin.PIN_Y_ABSOLUTE_OFFSET, PIN_Y_MIN + window.pin.PIN_Y_ABSOLUTE_OFFSET);

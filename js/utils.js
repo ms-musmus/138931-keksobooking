@@ -22,18 +22,16 @@
         return roomNumber + ' комната';
       } else if (roomNumber % 10 === 2 || roomNumber % 10 === 3 || roomNumber % 10 === 4) {
         return roomNumber + ' комнаты';
-      } else {
-        return roomNumber + ' комнат';
       }
+      return roomNumber + ' комнат';
     },
     getStringDiff: function (left, right) {
       if (left > right) {
         return 1;
       } else if (left < right) {
         return -1;
-      } else {
-        return 0;
       }
+      return 0;
     },
     getPinCoordsDiff: function (mainPin, currentPin) {
       return Math.abs(currentPin.location.x + currentPin.location.y - (mainPin.x + mainPin.y));
@@ -50,9 +48,8 @@
             return pin.offer.price < window.data.OFFER_PRICE_MAP[filterElement.value].max;
           } else if (!window.data.OFFER_PRICE_MAP[filterElement.value].max) {
             return pin.offer.price > window.data.OFFER_PRICE_MAP[filterElement.value].min;
-          } else {
-            return pin.offer.price >= window.data.OFFER_PRICE_MAP[filterElement.value].min && pin.offer.price <= window.data.OFFER_PRICE_MAP[filterElement.value].max;
           }
+          return pin.offer.price >= window.data.OFFER_PRICE_MAP[filterElement.value].min && pin.offer.price <= window.data.OFFER_PRICE_MAP[filterElement.value].max;
         case 'housing-rooms':
           return parseInt(filterElement.value, 10) === pin.offer.rooms;
         case 'housing-guests':
